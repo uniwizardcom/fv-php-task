@@ -1,3 +1,4 @@
 [mysqld]
+skip-grant-tables
 skip-host-cache
 skip-name-resolve

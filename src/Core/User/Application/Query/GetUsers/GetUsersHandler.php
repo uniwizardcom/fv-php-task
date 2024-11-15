@@ -21,7 +21,8 @@ class GetUsersHandler
         return array_map(function (User $user) {
             return new UserDTO(
                 $user->getId(),
-                $user->getEmail()
+                $user->getEmail(),
+                $user->getIsActive()
             );
         }, $users);
     }

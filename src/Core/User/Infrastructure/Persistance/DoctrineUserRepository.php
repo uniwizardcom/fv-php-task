@@ -37,6 +37,15 @@ class DoctrineUserRepository implements UserRepositoryInterface
         return $user;
     }
 
+    public function getAll(): array
+    {
+        return $this->entityManager->createQueryBuilder()
+            ->select('u')
+            ->from(User::class, 'u')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function save(User $user): void
     {
         $this->entityManager->persist($user);

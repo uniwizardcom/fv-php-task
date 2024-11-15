@@ -34,6 +34,11 @@ class User
         $this->record(new UserCreatedEvent($this));
     }
 
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
     public function getEmail(): string
     {
         return $this->email;

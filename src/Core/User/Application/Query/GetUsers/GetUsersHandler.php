@@ -16,7 +16,9 @@ class GetUsersHandler
 
     public function __invoke(GetUsersQuery $query): array
     {
-        $users = $this->userRepository->getAll();
+        $users = $this->userRepository->getAll(
+            $query->isActive
+        );
 
         return array_map(function (User $user) {
             return new UserDTO(

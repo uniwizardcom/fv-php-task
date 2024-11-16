@@ -37,13 +37,17 @@ class DoctrineUserRepository implements UserRepositoryInterface
         return $user;
     }
 
-    public function getAll(): array
+    public function getAll(?bool $isActive): array
     {
-        return $this->entityManager->createQueryBuilder()
+        $queryBuilder = $this->entityManager->createQueryBuilder()
             ->select('u')
-            ->from(User::class, 'u')
-            ->getQuery()
-            ->getResult();
+            ->from(User::class, 'u');
+
+        if($isActive !== null) {
+            $queryBuilder->andWhere('u.is_active = :is_active')->setParameter(':is_active', $isActive);
+        }
+
+        return $queryBuilder->getQuery()->getResult();
     }
 
     public function save(User $user): void

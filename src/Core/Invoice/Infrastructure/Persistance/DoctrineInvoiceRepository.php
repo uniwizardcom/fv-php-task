@@ -17,13 +17,21 @@ class DoctrineInvoiceRepository implements InvoiceRepositoryInterface
 
     public function getInvoicesWithGreaterAmountAndStatus(int $amount, InvoiceStatus $invoiceStatus): array
     {
-        return $this->entityManager
+        $builder = $this->entityManager
             ->createQueryBuilder()
             ->select('i')
             ->from(Invoice::class, 'i')
-            ->where('i.status = :invoice_status')
-            ->setParameter(':invoice_status', InvoiceStatus::NEW)
-            ->getQuery()
+
+            ->where('i.amount > :invoice_amount') // błąd dla amount - był brak warunku
+            ->andWhere('i.status = :invoice_status')
+            // ->setParameter(':invoice_status', InvoiceStatus::NEW) // błąd dla NEW
+
+            ->setParameters([
+                ':invoice_amount' => $amount,
+                ':invoice_status' => $invoiceStatus->value
+            ]);
+
+        return $builder->getQuery()
             ->getResult();
     }
 

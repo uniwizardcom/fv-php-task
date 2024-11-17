@@ -3,8 +3,11 @@
 namespace App\Core\Invoice\UserInterface\Cli;
 
 use App\Common\Bus\QueryBusInterface;
+use App\Common\CurrencyTranslator\AmountException;
+use App\Common\CurrencyTranslator\AmountTranslator;
 use App\Core\Invoice\Application\DTO\InvoiceDTO;
 use App\Core\Invoice\Application\Query\GetInvoicesByStatusAndAmountGreater\GetInvoicesByStatusAndAmountGreaterQuery;
+use App\Core\Invoice\Domain\Status\InvoiceStatus;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -22,10 +25,15 @@ class GetInvoices extends Command
         parent::__construct();
     }
 
+    /**
+     * @throws AmountException
+     * @throws \Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $invoices = $this->bus->dispatch(new GetInvoicesByStatusAndAmountGreaterQuery(
-            $input->getArgument('amount')
+            (int)$input->getArgument('amount'),
+            $this->parseArgStatus($input->getArgument('status'))
         ));
 
         /** @var InvoiceDTO $invoice */
@@ -40,5 +48,21 @@ class GetInvoices extends Command
     {
         $this->addArgument('status', InputArgument::REQUIRED);
         $this->addArgument('amount', InputArgument::REQUIRED);
+    }
+
+    /**
+     * @param string $status
+     *
+     * @return InvoiceStatus
+     * @throws \Exception
+     */
+    private function parseArgStatus(string $status): InvoiceStatus
+    {
+        $result = InvoiceStatus::tryFrom($status);
+        if(!$result) {
+            throw new \Exception('Wartość ['. $status .'] nie jest żadnym z dostępnych statusów');
+        }
+
+        return $result;
     }
 }

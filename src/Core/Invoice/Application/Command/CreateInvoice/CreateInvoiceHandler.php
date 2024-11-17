@@ -2,6 +2,7 @@
 
 namespace App\Core\Invoice\Application\Command\CreateInvoice;
 
+use App\Common\CurrencyTranslator\AmountTranslator;
 use App\Core\Invoice\Domain\Invoice;
 use App\Core\Invoice\Domain\Repository\InvoiceRepositoryInterface;
 use App\Core\User\Domain\Repository\UserRepositoryInterface;
@@ -19,7 +20,7 @@ class CreateInvoiceHandler
     {
         $this->invoiceRepository->save(new Invoice(
             $this->userRepository->getByEmail($command->email),
-            $command->amount
+            (new AmountTranslator(stringRepresetation: $command->amount))->getBase()
         ));
 
         $this->invoiceRepository->flush();

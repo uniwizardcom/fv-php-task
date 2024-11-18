@@ -10,7 +10,7 @@ interface UserRepositoryInterface
     /**
      * @throws UserNotFoundException
      */
-    public function getByEmail(string $email): User;
+    public function getByEmail(string $email, bool $onlyActiveUser = false): User;
 
     public function save(User $invoice): void;
 

@@ -17,17 +17,25 @@ class DoctrineUserRepository implements UserRepositoryInterface
     ) {}
 
     /**
+     * @param string $email
+     * @param bool   $onlyActiveUser
+     *
+     * @return User
      * @throws NonUniqueResultException
      */
-    public function getByEmail(string $email): User
+    public function getByEmail(string $email, bool $onlyActiveUser = false): User
     {
-        $user = $this->entityManager->createQueryBuilder()
+        $userBuilder = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(User::class, 'u')
-            ->where('u.email = :user_email')
-            ->setParameter(':user_email', $email)
-            ->setMaxResults(1)
-            ->getQuery()
+            ->where('u.email = :user_email')->setParameter(':user_email', $email)
+            ->setMaxResults(1);
+
+        if($onlyActiveUser) {
+            $userBuilder->andWhere('u.is_active = :is_active')->setParameter(':is_active', true);
+        }
+
+        $user = $userBuilder->getQuery()
             ->getOneOrNullResult();
 
         if (null === $user) {

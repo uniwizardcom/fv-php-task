@@ -2,6 +2,7 @@
 
 namespace App\Core\Invoice\UserInterface\Cli;
 
+use App\Common\UserIsActiveInoutParameterTrait;
 use App\Core\Invoice\Application\Command\CreateInvoice\CreateInvoiceCommand;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -16,6 +17,8 @@ use Symfony\Component\Messenger\MessageBusInterface;
 )]
 class CreateInvoice extends Command
 {
+    use UserIsActiveInoutParameterTrait;
+
     public function __construct(private readonly MessageBusInterface $bus)
     {
         parent::__construct();
@@ -25,7 +28,8 @@ class CreateInvoice extends Command
     {
         $this->bus->dispatch(new CreateInvoiceCommand(
             $input->getArgument('email'),
-            $input->getArgument('amount')
+            (int)$input->getArgument('amount'),
+            (bool)$this->parseArgIsActive($input->getArgument('only_active_user'))
         ));
 
         return Command::SUCCESS;
@@ -35,5 +39,6 @@ class CreateInvoice extends Command
     {
         $this->addArgument('email', InputArgument::REQUIRED);
         $this->addArgument('amount', InputArgument::REQUIRED);
+        $this->addArgument('only_active_user', InputArgument::OPTIONAL);
     }
 }

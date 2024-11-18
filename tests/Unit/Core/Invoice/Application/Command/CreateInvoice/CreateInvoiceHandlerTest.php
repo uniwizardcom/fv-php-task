@@ -68,6 +68,17 @@ class CreateInvoiceHandlerTest extends TestCase
         $this->handler->__invoke((new CreateInvoiceCommand('test@test.pl', 12500)));
     }
 
+    public function test_handle_user_exists_and_not_active(): void
+    {
+        $this->expectException(UserNotFoundException::class);
+
+        $this->userRepository->expects(self::once())
+            ->method('getByEmail')
+            ->willThrowException(new UserNotFoundException());
+
+        $this->handler->__invoke((new CreateInvoiceCommand('test@test.pl', 12500, true)));
+    }
+
     public function test_handle_invoice_invalid_amount(): void
     {
         $this->expectException(InvoiceException::class);

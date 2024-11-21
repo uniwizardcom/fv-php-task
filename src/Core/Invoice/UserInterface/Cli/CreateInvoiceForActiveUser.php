@@ -2,7 +2,8 @@
 
 namespace App\Core\Invoice\UserInterface\Cli;
 
-use App\Core\Invoice\Application\Command\CreateInvoice\CreateInvoiceCommand;
+use App\Common\UserIsActiveInoutParameterTrait;
+use App\Core\Invoice\Application\Command\CreateInvoice\CreateInvoiceForActiveUserCommand;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -11,11 +12,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 #[AsCommand(
-    name: 'app:invoice:create',
-    description: 'Dodawanie nowej faktury'
+    name: 'app:invoice:create-active-user',
+    description: 'Dodawanie nowej faktury tylko dla aktywnych użytkowników'
 )]
-class CreateInvoice extends Command
+class CreateInvoiceForActiveUser extends Command
 {
+    use UserIsActiveInoutParameterTrait;
+
     public function __construct(private readonly MessageBusInterface $bus)
     {
         parent::__construct();
@@ -23,7 +26,7 @@ class CreateInvoice extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->bus->dispatch(new CreateInvoiceCommand(
+        $this->bus->dispatch(new CreateInvoiceForActiveUserCommand(
             $input->getArgument('email'),
             (int)$input->getArgument('amount')
         ));
@@ -35,6 +38,5 @@ class CreateInvoice extends Command
     {
         $this->addArgument('email', InputArgument::REQUIRED);
         $this->addArgument('amount', InputArgument::REQUIRED);
-        $this->addArgument('only_active_user', InputArgument::OPTIONAL);
     }
 }

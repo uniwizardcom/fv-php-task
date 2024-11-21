@@ -4,7 +4,6 @@ namespace App\Core\Invoice\UserInterface\Cli;
 
 use App\Common\Bus\QueryBusInterface;
 use App\Common\CurrencyTranslator\AmountException;
-use App\Common\CurrencyTranslator\AmountTranslator;
 use App\Core\Invoice\Application\DTO\InvoiceDTO;
 use App\Core\Invoice\Application\Query\GetInvoicesByStatusAndAmountGreater\GetInvoicesByStatusAndAmountGreaterQuery;
 use App\Core\Invoice\Domain\Status\InvoiceStatus;
@@ -26,7 +25,6 @@ class GetInvoices extends Command
     }
 
     /**
-     * @throws AmountException
      * @throws \Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output): int

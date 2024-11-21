@@ -2,7 +2,7 @@
 
 namespace App\Core\Invoice\Application\Command\CreateInvoice;
 
-class CreateInvoiceCommand
+class CreateInvoiceForActiveUserCommand
 {
     public function __construct(
         public readonly string $email,
